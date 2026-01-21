@@ -38,18 +38,18 @@ function squareNumber(num) {
   //code here
   if (num < 3) return "Minimal input adalah 3";
 
-  let rows = [];
+  let row = [];
   let arr = [];
 
-  // LOOP THROUGH SQUARE OF NUM (3X3) TO GET SQUARE SHAPE
+  // LOOP THROUGH SQUARE OF NUM (num*num) TO GET SQUARE SHAPE
   for (let i = 1; i <= num * num; i++) {
-    rows.push(i); // ADD NUM TO ARRAY ROWS
+    row.push(i); // ADD NUM TO ARRAY ROWS
 
     // IF ROWS LENGTH EQUAL NUM
     // ADD ROW TO ARR AND EMPTY ROWS FOR NEXT ROW
-    if (rows.length === num) {
-      arr.push(rows);
-      rows = [];
+    if (row.length === num) {
+      arr.push(row);
+      row = [];
     }
   }
   // REVESE THE EVEN ROW (ODD IDX)
