@@ -1,113 +1,82 @@
 import { TodoItem, TodoList } from "./class.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  let todoContainer = document.getElementById("myUL");
-  let todoLists = document.querySelectorAll("li");
+  const todoContainer = document.getElementById("myUL");
+  const todoLists = document.querySelectorAll("li");
   const search = document.getElementById("search");
+  const input = document.getElementById("myInput");
+  const addBtn = document.querySelector(".addBtn");
+
   let todos = new TodoList();
 
   // add list to TodoList object
   todoLists.forEach((list) => {
     const text = list.childNodes[0].nodeValue.trim();
-    let todo = new TodoItem(text);
-    todos.addTodo(todo);
-
-    // create dataset id
-    list.dataset.id = todo.id;
+    todos.add(text);
   });
 
   // render all todo list
-  render(todos.list);
+  render();
 
   //click events
-  todoContainer.addEventListener("click", (e) => {
+  todoContainer.addEventListener("click", handleClick);
+  addBtn.addEventListener("click", newElement);
+  search.addEventListener("input", render);
+
+  function handleClick(e) {
+    let id;
     if (e.target.tagName === "LI") {
-      const id = e.target.dataset.id;
-      let item = todos.getTodo(id);
-
-      item.toggleCompleted();
-
-      if (item.isCompleted) {
-        e.target.classList.add("checked");
-      } else if (!item.isCompleted) {
-        e.target.classList.remove("checked");
-      }
+      id = e.target.dataset.id;
+      todos.get(id).toggleCompleted();
     }
     if (e.target.classList.contains("close")) {
-      let list = e.target.parentElement;
-      const id = list.dataset.id;
+      id = e.target.parentElement.dataset.id;
 
-      todos.deleteTodo(id);
-      list.remove();
+      todos.delete(id);
     }
-  });
-
-  // add new todo event
-  let addBtn = document.querySelector(".addBtn");
-  addBtn.addEventListener("click", newElement);
+    render();
+  }
 
   //add new todo function
   function newElement() {
-    let inputVal = document.getElementById("myInput").value;
-    let todo = new TodoItem(inputVal);
-
-    todos.addTodo(todo);
+    let inputVal = input.value;
 
     if (inputVal === "") {
       alert("You must write something!");
       return;
-    } else {
-      let li = document.createElement("li");
-      li.dataset.id = todo.id;
-      li.textContent = todo.text;
-      todoContainer.appendChild(li);
-      li.appendChild(clsBtn());
-      document.getElementById("myInput").value = "";
     }
+    todos.add(inputVal);
+    input.value = "";
+    render();
   }
 
-  search.addEventListener("input", searchTodo);
-
-  function searchTodo() {
-    let searchVal = this.value.toLowerCase();
-    const filteredTodos = todos.list.filter((li) =>
-      li.text.toLowerCase().includes(searchVal)
-    );
-    console.log(filteredTodos);
-
-    render(filteredTodos);
-  }
-
-  function render(item) {
+  function render() {
     todoContainer.innerHTML = "";
+    let searchVal = search.value;
+
+    let displayTodo = todos.list.filter((list) =>
+      list.text.includes(searchVal),
+    );
 
     //render all item in TodoList to HTML list
-    item.forEach((list) => {
+    displayTodo.forEach((list) => {
       const li = document.createElement("li");
       li.dataset.id = list.id;
       li.textContent = list.text;
 
       if (list.isCompleted) {
-        list.classList.add("checked");
+        li.classList.add("checked");
       }
 
       li.appendChild(clsBtn());
       todoContainer.appendChild(li);
     });
   }
-});
-const clsBtn = () => {
-  const span = document.createElement("span");
-  span.innerHTML = "&times;";
-  span.className = "close";
-  return span;
-};
-function addCloseBtn() {
-  let nodeList = document.querySelectorAll("li");
-  nodeList.forEach((li) => {
+
+  function clsBtn() {
     const span = document.createElement("span");
     span.innerHTML = "&times;";
     span.className = "close";
-    li.appendChild(span);
-  });
-}
+    return span;
+  }
+});

@@ -1,13 +1,12 @@
 export class TodoItem {
-  isCompleted = false;
-
   constructor(text) {
     this.text = text;
     this.id = crypto.randomUUID();
     this.createdAt = new Date();
+    this.isCompleted = false;
   }
 
-  get getFormattedDate() {
+  get formattedDate() {
     return new Intl.DateTimeFormat("en-GB", {
       dateStyle: "short",
     }).format(this.createdAt);
@@ -16,9 +15,6 @@ export class TodoItem {
   toggleCompleted() {
     this.isCompleted = !this.isCompleted;
   }
-  matchesSearch(textInput) {
-    return this.text.includes(textInput);
-  }
 }
 
 export class TodoList {
@@ -26,15 +22,15 @@ export class TodoList {
     this._list = [];
   }
   get list() {
-    return this._list;
+    return [...this._list]; //return copy of list
   }
-  addTodo(todoItem) {
-    this._list.push(todoItem);
+  add(text) {
+    this._list.push(new TodoItem(text));
   }
-  getTodo(idx) {
+  get(idx) {
     return this._list.find((list) => list.id === idx);
   }
-  deleteTodo(idx) {
+  delete(idx) {
     let newList = this._list.filter((todos) => todos.id !== idx);
     this._list = newList;
   }
